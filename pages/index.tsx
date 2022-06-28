@@ -1,11 +1,12 @@
 import type { NextPage } from "next";
 import Header from "../templates/header";
 import Movies from "../templates/movies";
-import { useQuery } from "react-query";
+import { useQuery, QueryClient, dehydrate } from "react-query";
 import { MovieData } from "../models/movies";
 
 const Home: NextPage = () => {
 	const { data, isLoading, isFetching } = useQuery<MovieData>("movies", getMovieData);
+
 	if (isLoading) {
 		return <div>Loading...</div>;
 	}
@@ -25,3 +26,14 @@ const getMovieData = async () => {
 	).then((res) => res.json());
 	return response;
 };
+
+export const getStaticProps = async () => {
+	const queryClient = new QueryClient();
+	await queryClient.prefetchQuery<MovieData>('movies', getMovieData);
+
+	return {
+		props: {
+			dehydratedState: dehydrate(queryClient)
+		}
+	}
+}
