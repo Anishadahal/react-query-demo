@@ -9,12 +9,12 @@ const TitleImage: React.FC<Props> = ({ movie }) => {
 	const imageBasePath = "https://image.tmdb.org/t/p/original";
 
 	return (
-		<div>
+		<div className="w-full">
 			<Image
 				src={imageBasePath + movie.backdrop_path || movie.poster_path}
 				alt=""
-				height={200}
-				width={200}
+				height={400}
+				width={650}
 			/>
 		</div>
 	);
