@@ -17,7 +17,9 @@ const FeaturedMovies: React.FC<Props> = ({ movie }) => {
 					<p className="text-general pb-5">{movie?.overview}</p>
 					<div className="flex items-center">
 						<div className="pl-3 text-xs">
-							{movie?.release_date && <p className="text-general">Released at {movie?.release_date}</p>}
+							{movie?.release_date && (
+								<p className="text-general">Released at {movie?.release_date}</p>
+							)}
 						</div>
 					</div>
 				</div>

@@ -6,7 +6,7 @@ type Props = {
 	movie: Results;
 };
 const TitleImage: React.FC<Props> = ({ movie }) => {
-	const imageBasePath = "https://image.tmdb.org/t/p/original";
+	const imageBasePath = process.env.NEXT_PUBLIC_IMAGE_BASE_URL;
 
 	return (
 		<div className="w-full">

@@ -1,50 +1,41 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { dehydrate, QueryClient, useQuery } from "react-query";
-import { MovieData } from "../models/movies";
+import { Genres, MovieData } from "../models/movies";
+import { getMovieByGenre, getMovieData } from "../services/fetch-data";
 import Header from "../templates/header";
 import Movies from "../templates/movies";
-import requests from "../utils/query";
+import Sidebar from "../templates/sidebar";
 
 const Home: NextPage = () => {
 	const router = useRouter();
-	const genre: any = router.query.genre;
-	const { data, isLoading, isFetching, error } = useQuery<MovieData>("movies", () =>
-		getMovieData({ genre })
+	const { data, isLoading } = useQuery<Genres>("genres", () => getMovieData());
+
+	const { data: movieData } = useQuery<MovieData>(
+		["movies", router.query.genre],
+		() => getMovieByGenre(router.query.genre),
+		{
+			refetchOnWindowFocus: false,
+		}
 	);
 
 	if (isLoading) {
-		return <div>Loading...</div>;
-	}
-	if (isFetching) {
-		return <div>Fetching...</div>;
-	}
-	if (error) {
-		return <div>Something went wrong!</div>;
+		return <div className="font-title text-secondary">Loading...</div>;
 	}
 	return (
 		<div className="font-body">
+			<Sidebar genre={data as Genres} />
 			<Header />
-			<Movies data={data} />
+			<Movies data={movieData as MovieData} />
 		</div>
 	);
 };
 
 export default Home;
 
-const getMovieData = async ({ genre }: { genre: string }) => {
-	const response = await fetch(
-		`${process.env.NEXT_PUBLIC_BASE_URL}${
-			requests[genre as keyof typeof requests]?.url || requests?.fetchTrending?.url
-		}`
-	).then((res) => res.json());
-	return response;
-};
-
-export const getServerSideProps = async (context: any) => {
-	const { genre } = context.query || "";
+export const getServerSideProps = async () => {
 	const queryClient = new QueryClient();
-	await queryClient.prefetchQuery<MovieData>("movies", () => getMovieData({ genre }));
+	await queryClient.prefetchQuery<MovieData>("genres", getMovieData);
 	return {
 		props: {
 			dehydratedState: dehydrate(queryClient),
