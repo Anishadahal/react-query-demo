@@ -21,6 +21,7 @@ export const getMovieData = async () => {
 
 //Search Movies by name
 export const searchMoviesByTitle = async (title: any) => {
+	if (!title) return;	
 	const response = await fetch(
 		`${base_url}/search/movie?api_key=${api_key}&language=en-US&query=${title}&page=1&include_adult=false
         `
